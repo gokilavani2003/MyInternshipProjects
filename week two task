@@ -1,0 +1,46 @@
+import java.util.Base62;
+import java.util.HashMap;
+import java.util.Map;
+
+public class LinkShortener {
+
+    private static final String BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final Map<String, String> URL_MAP = new HashMap<>();
+
+    public static String shortenURL(String originalURL) {
+        if (URL_MAP.containsKey(originalURL)) {
+            return URL_MAP.get(originalURL);
+        }
+
+        String shortURL = generateShortURL();
+        URL_MAP.put(originalURL, shortURL);
+        return shortURL;
+    }
+
+    private static String generateShortURL() {
+        StringBuilder shortURLBuilder = new StringBuilder();
+        while (shortURLBuilder.length() < 5) {
+            int randomIndex = (int) (Math.random() * BASE62_CHARS.length());
+            shortURLBuilder.append(BASE62_CHARS.charAt(randomIndex));
+        }
+
+        String shortURL = shortURLBuilder.toString();
+        if (URL_MAP.containsKey(shortURL)) {
+            return generateShortURL(); // Recursively generate if collision occurs
+        }
+        return shortURL;
+    }
+
+    public static String getOriginalURL(String shortURL) {
+        return URL_MAP.get(shortURL);
+    }
+
+    public static void main(String[] args) {
+        String longURL = "https://www.example.com/very-long-and-unwieldy-url";
+        String shortURL = shortenURL(longURL);
+        System.out.println("Shortened URL: " + shortURL);
+
+        String originalURL = getOriginalURL(shortURL);
+        System.out.println("Original URL: " + originalURL);
+    }
+}
